@@ -221,4 +221,14 @@ function rel2abs($rel, $base)
 	return $scheme . '://' . $abs;
 }
 
+
+
+// function for debug
+function console_log( $data ){
+    echo '<script>';
+    echo 'console.log('. json_encode( $data ) .')';
+    echo '</script>';
+}
+
+
 ?>

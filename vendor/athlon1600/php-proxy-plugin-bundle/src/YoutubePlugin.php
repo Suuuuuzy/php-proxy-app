@@ -11,7 +11,7 @@ class YoutubePlugin extends AbstractPlugin {
 
 	protected $url_pattern = 'youtube.com';
 	
-	// force old YouTube layout!
+//	// force old YouTube layout!
 	public function onBeforeRequest(ProxyEvent $event){
 		$event['request']->headers->set('Cookie', 'PREF=f6=8');
 		$event['request']->headers->set('User-Agent', 'Opera/7.50 (Windows XP; U)');
@@ -21,6 +21,8 @@ class YoutubePlugin extends AbstractPlugin {
 	
 		$response = $event['response'];
 		$url = $event['request']->getUrl();
+//        console_log('youtube_plugin_before: '. $event['request']);
+
 		$output = $response->getContent();
 		
 		// remove top banner that's full of ads
@@ -36,7 +38,7 @@ class YoutubePlugin extends AbstractPlugin {
 			$has_src = strpos($matches[0], 'src="') !== false;
 			
 			// proxified thumb url
-			$thumb_url = proxify_url($matches[1], false);
+			$thumb_url = whole_url($matches[1], false);
 			
 			if($has_src){
 				// TODO: maybe remove data-thumb too?
@@ -50,11 +52,12 @@ class YoutubePlugin extends AbstractPlugin {
 		$youtube = new \YouTubeDownloader();
 		// cannot pass HTML directly because all the links in it are already "proxified"...
 		$links = $youtube->getDownloadLinks($url, "mp4 360, mp4");
-		
+//        console_log('youtube_plugin_before: '. $url);
+
 		if($links){
 		
 			$url = current($links)['url'];
-			
+            console_log('youtube_plugin: '. $url);
 			$player = vid_player($url, 640, 390, 'mp4');
 			
 			// this div blocks our player controls
