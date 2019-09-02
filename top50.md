@@ -1,7 +1,7 @@
 | website                                                      | state                                                        |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | [Google.com]                                                 | 1                                                            |
-| youtube.com                                                  | 1 but video still from proxy                                 |
+| youtube.com                                                  | 1                                                            |
 | facebook.com                                                 | 1 not able to log in or sign up                              |
 | wikipedia.org                                                | 1                                                            |
 | yahoo.com                                                    | 1                                                            |
