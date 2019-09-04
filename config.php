@@ -34,7 +34,8 @@ $config['plugins'] = array(
 	'XHamster',
 	'XVideos',
 	'Pornhub',
-	'Twitter'
+	'Twitter',
+    'IMDB'
 );
 
 // additional curl options to go with each request
@@ -42,6 +43,9 @@ $config['curl'] = array(
 	// CURLOPT_PROXY => '',
 	// CURLOPT_CONNECTTIMEOUT => 5
 );
+
+
+//$config['js_remove'] = array('reddit.com');
 
 //$config['replace_title'] = 'Google Search';
 

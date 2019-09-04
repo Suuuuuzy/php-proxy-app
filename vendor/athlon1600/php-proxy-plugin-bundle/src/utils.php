@@ -17,7 +17,7 @@ function vid_player($url, $width = '100%', $height = '100%', $extension = false)
 	
 	// this better be an absolute url and proxify_url function better already be included from somewhere
 	$video_url = whole_url($url);
-
+//    console_log('video_url: '. $url);
 	if($html5){
 	
 		$html = '<video width="'.$width.'" height="'.$height.'" controls autoplay>

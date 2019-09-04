@@ -180,6 +180,8 @@ class Proxy {
 			// we have output waiting in the buffer?
 			$this->response->setContent($this->output_buffer);
 			
+//			console_log('proxy.php $this->output_buffer: '. $this->output_buffer);
+
 			// saves memory I would assume?
 			$this->output_buffer = null;
 		}

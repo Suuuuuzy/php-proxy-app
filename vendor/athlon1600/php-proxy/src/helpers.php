@@ -168,8 +168,18 @@ function proxify_url($url, $base_url = ''){
 		$base_url = add_http($base_url);
 		$url = rel2abs($url, $base_url);
 	}
-	
 	return app_url().'?q='.url_encrypt($url);
+}
+
+function no_encode_proxify_url($url, $base_url = ''){
+
+    $res = htmlspecialchars_decode($url);
+
+    if($base_url){
+        $base_url = add_http($base_url);
+        $res = rel2abs($res, $base_url);
+    }
+    return $res;
 }
 
 // the whole url (http://www.youtube.com)

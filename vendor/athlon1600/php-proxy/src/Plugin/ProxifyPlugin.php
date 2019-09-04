@@ -17,13 +17,11 @@ class ProxifyPlugin extends AbstractPlugin {
 		if(starts_with($url, 'data:')){
 			return $matches[0];
 		}
-		$this->console_log('css_url_debug-' . str_replace($matches[1], proxify_url($matches[1], $this->base_url), $matches[0]));
 		return str_replace($matches[1], proxify_url($matches[1], $this->base_url), $matches[0]);
 	}
 	
 	// this.params.logoImg&&(e="background-image: url("+this.params.logoImg+")")
 	private function css_import($matches){
-		$this->console_log('css_import_debug-' . str_replace($matches[2], proxify_url($matches[2], $this->base_url), $matches[0]));
 		return str_replace($matches[2], proxify_url($matches[2], $this->base_url), $matches[0]);
 	}
 
@@ -37,28 +35,33 @@ class ProxifyPlugin extends AbstractPlugin {
 		if(starts_with($url, $schemes)){
 			return $matches[0];
 		}
-		$this->console_log('html_attr_debug-' . str_replace($url, proxify_url($url, $this->base_url), $matches[0]));
+		console_log('html_attr_debug-' . str_replace($url, proxify_url($url, $this->base_url), $matches[0]));
 		return str_replace($url, proxify_url($url, $this->base_url), $matches[0]);
 	}
 
-	// function for debug
-	function console_log( $data ){
-		echo '<script>';
-		echo 'console.log('. json_encode( $data ) .')';
-		echo '</script>';
+	private function script_attr($matches){
+
+		// could be empty?
+		$url = trim($matches[3]);
+		console_log('script_attr: ' . $url);
+		$schemes = array('data:', 'magnet:', 'about:', 'javascript:', 'mailto:', 'tel:', 'ios-app:', 'android-app:', 'blob:');
+		if(starts_with($url, $schemes)){
+			return $matches[0];
+		}
+		console_log('html_attr_debug-' . str_replace($url, proxify_url($url, $this->base_url), $matches[0]));
+		return str_replace($url, proxify_url($url, $this->base_url), $matches[0]);
 	}
 
 	//replace  src
 	private function src_attr($matches){
 		// could be empty?
-		$url = trim($matches[2]);
+		$url = trim($matches[3]);
 
 		$schemes = array('data:', 'magnet:', 'about:', 'javascript:', 'mailto:', 'tel:', 'ios-app:', 'android-app:', 'blob:');
 		if(starts_with($url, $schemes)){
 			return $matches[0];
 		}
-//		$this->console_log('debug1-' . $url);
-//		$this->console_log('debug2-' . whole_url($url, $this->base_url));
+
 		return str_replace($url, whole_url($url, $this->base_url), $matches[0]);
 //		return 'success';
 	}
@@ -74,13 +77,12 @@ class ProxifyPlugin extends AbstractPlugin {
 		if(!$matches[2]){
 			$matches[2] = $this->base_url;
 		}
-
-
 		$new_action = proxify_url($matches[2], $this->base_url);
-		
+		console_log('form_action-debug ' . no_encode_proxify_url($matches[2], $this->base_url));
+
 		// what is form method?
 		$form_post = preg_match('@method=(["\'])post\1@i', $matches[0]) == 1;
-		
+//		console_log('$form_post '. $form_post);
 		// take entire form string - find real url and replace it with proxified url
 		$result = str_replace($matches[2], $new_action, $matches[0]);
 		
@@ -94,8 +96,7 @@ class ProxifyPlugin extends AbstractPlugin {
 			$result .= '<input type="hidden" name="convertGET" value="1">';
 		}
 
-		$this->console_log('form_action_debug-' . $new_action);
-
+//		console_log('$result '. $result);
 		return $result;
 	}
 	
@@ -124,7 +125,6 @@ class ProxifyPlugin extends AbstractPlugin {
 	
 	private function meta_refresh($matches){
 		$url = $matches[2];
-		$this->console_log('meta_fresh_debug-' . str_replace($url, proxify_url($url, $this->base_url), $matches[0]));
 		return str_replace($url, proxify_url($url, $this->base_url), $matches[0]);
 	}
 	
@@ -188,11 +188,9 @@ class ProxifyPlugin extends AbstractPlugin {
 		foreach($js_remove as $pattern){
 			if(strpos($url_host, $pattern) !== false){
 				$str = Html::remove_scripts($str);
-				$this->console_log('remove js');
 			}
 		}
 
-//		$this->console_log('see str'. $str);
 
 		// add html.no-js
 		
@@ -206,7 +204,12 @@ class ProxifyPlugin extends AbstractPlugin {
 		$str = preg_replace_callback('@(?:href)\s*=\s*(["|\'])(.*?)\1@is', array($this, 'html_attr'), $str);
 
 		// src=
-		$str = preg_replace_callback('@(?:src)\s*=\s*(["|\'])(.*?)\1@is', array($this, 'src_attr'), $str);
+		$str = preg_replace_callback('#(?><img|video)(?>\s+[^>\s]+)*?\s*(?>(src)\s*=(?!\\\\)\s*)(?>([\\\'"])?)((?(2)(?(?<=")[^"]{1,1000}|[^\\\']{1,1000})|[^ >]{1,1000}))(?(2)\\2|)#i', array($this, 'src_attr'), $str);
+
+		$str = preg_replace_callback('#(?><a|script|link)(?>\s+[^>\s]+)*?\s*(?>(src)\s*=(?!\\\\)\s*)(?>([\\\'"])?)((?(2)(?(?<=")[^"]{1,1000}|[^\\\']{1,1000})|[^ >]{1,1000}))(?(2)\\2|)#i', array($this, 'script_attr'), $str);
+
+//		$str = preg_replace_callback('@(?:src)\s*=\s*(["|\'])(.*?)\1@is', array($this, 'src_attr'), $str);
+//		$str = preg_replace_callback('@(?:src)\s*=\s*(["|\'])(.*?)\1@is', array($this, 'html_attr'), $str);
 
 		// img srcset
 		// change to whole_url

@@ -12,19 +12,21 @@ class YoutubePlugin extends AbstractPlugin {
 	protected $url_pattern = 'youtube.com';
 	
 //	// force old YouTube layout!
-	public function onBeforeRequest(ProxyEvent $event){
-		$event['request']->headers->set('Cookie', 'PREF=f6=8');
-		$event['request']->headers->set('User-Agent', 'Opera/7.50 (Windows XP; U)');
-	}
+//	public function onBeforeRequest(ProxyEvent $event){
+//		$event['request']->headers->set('Cookie', 'PREF=f6=8');
+//		$event['request']->headers->set('User-Agent', 'Opera/7.50 (Windows XP; U)');
+//	}
 	
 	public function onCompleted(ProxyEvent $event){
 	
 		$response = $event['response'];
 		$url = $event['request']->getUrl();
-//        console_log('youtube_plugin_before: '. $event['request']);
 
 		$output = $response->getContent();
-		
+
+//        $output = Html::remove_comments($output);
+//        console_log('youtube_$response: '. $output);
+        
 		// remove top banner that's full of ads
 		$output = Html::remove("#header", $output);
 		
@@ -57,7 +59,7 @@ class YoutubePlugin extends AbstractPlugin {
 		if($links){
 		
 			$url = current($links)['url'];
-            console_log('youtube_plugin: '. $url);
+//            console_log('youtube_plugin: '. $url);
 			$player = vid_player($url, 640, 390, 'mp4');
 			
 			// this div blocks our player controls
@@ -68,7 +70,7 @@ class YoutubePlugin extends AbstractPlugin {
 		}
 		
 		// causes too many problems...
-		$output = Html::remove_scripts($output);
+//		$output = Html::remove_scripts($output);
 			
 		$response->setContent($output);
 	}
