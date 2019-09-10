@@ -26,12 +26,12 @@ class UrlFormPlugin extends AbstractPlugin
         $output = $response->getContent();
 
         // does the html page contain <body> tag, if so insert our form right after <body> tag starts
-        $output = preg_replace('@<body.*?>@is', '$0' . PHP_EOL . $url_form, $output, 1, $count);
-
+      /*  $output = preg_replace('@<body.*?>@is', '$0' . PHP_EOL . $url_form, $output, 1, $count);
+*/
         // <body> tag was not found, just put the form at the top of the page
-        if ($count == 0) {
-            $output = $url_form . $output;
-        }
+    //    if ($count == 0) {
+  //          $output = $url_form . $output;
+//        }
 
         $response->setContent($output);
     }

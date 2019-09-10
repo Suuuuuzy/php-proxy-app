@@ -11,12 +11,12 @@ class YoutubePlugin extends AbstractPlugin {
 
 	protected $url_pattern = 'youtube.com';
 	
-//	// force old YouTube layout!
-//	public function onBeforeRequest(ProxyEvent $event){
-//		$event['request']->headers->set('Cookie', 'PREF=f6=8');
-//		$event['request']->headers->set('User-Agent', 'Opera/7.50 (Windows XP; U)');
-//	}
-	
+	// force old YouTube layout!
+	public function onBeforeRequest(ProxyEvent $event){
+		$event['request']->headers->set('Cookie', 'PREF=f6=8');
+		$event['request']->headers->set('User-Agent', 'Opera/7.50 (Windows XP; U)');
+	}
+//
 	public function onCompleted(ProxyEvent $event){
 	
 		$response = $event['response'];
@@ -29,8 +29,11 @@ class YoutubePlugin extends AbstractPlugin {
         
 		// remove top banner that's full of ads
 		$output = Html::remove("#header", $output);
-		
-		// do this on all youtube pages
+
+//        $output = preg_replace('@<div[^>]*masthead-ad[^>]*>[^<]*<\\/div>@is', '', $output);
+//        $str = preg_replace('@<iframe[^>]*>[^<]*<\\/iframe>@is', '', $str);
+
+        // do this on all youtube pages
 		$output = preg_replace('@masthead-positioner">@', 'masthead-positioner" style="position:static;">', $output, 1);
 		
 		// data-thumb holds real image when it is available!

@@ -198,6 +198,7 @@ function whole_url($url, $base_url = ''){
 
 function rel2abs($rel, $base)
 {
+    // change to == will cause error
 	if (strpos($rel, "//") === 0) {
 		return "http:" . $rel;
 	}

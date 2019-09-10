@@ -77,13 +77,14 @@ function smart_select(ele){
 </script>
 
 
-<!--<script type="text/javascript">ginf={url:'{\'http://\'.$_SERVER['HTTP_HOST']}',script:'{$_SERVER['PHP_SELF']}',target:{h:'{$targetHost}',p:'{$targetPath}',b:'{$base}'},enc:{u:'{$unique}',e:'{$options['encodeURL']}',p:'{$CONFIG['path_info_urls']}'},b:'{$bitfield}'{$optional}}-->
-<!--console.log('ginf.url' + ginf.url);-->
-<!--console.log('ginf.script' + ginf.script);-->
-<!--</script>-->
-<!--<script type="text/javascript" src="http://localhost/~jia/php-proxy-app/includes/main.js"></script>-->
+<script>
+    var ginf={url:'{$siteURL}',script:'{$scriptName}',target:{h:'{$targetHost}',p:'{$targetPath}',b:'{$base}'},enc:{u:'{$unique}',e:'{$options['encodeURL']}',p:'{$CONFIG['path_info_urls']}'},b:'{$bitfield}'{$optional}};
+    console.log('ginf.url' + ginf.url);
+    console.log('ginf.script' + ginf.script);
+<script>
+
+<script type="text/javascript" src="http://localhost/~jia/php-proxy-app/includes/main.js"></script>
 
 
-<!--<script type="text/javascript">ginf={url:'{$siteURL}',script:'{$scriptName}',target:{h:'{$targetHost}',p:'{$targetPath}',b:'{$base}'},enc:{u:'{$unique}',e:'{$options['encodeURL']}',p:'{$CONFIG['path_info_urls']}'},b:'{$bitfield}'{$optional}}</script>-->
 
 

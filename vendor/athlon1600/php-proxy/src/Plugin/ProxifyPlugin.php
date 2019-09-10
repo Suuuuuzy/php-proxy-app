@@ -2,6 +2,7 @@
 
 namespace Proxy\Plugin;
 
+use Proxy\JavaScript;
 use Proxy\Plugin\AbstractPlugin;
 use Proxy\Event\ProxyEvent;
 use Proxy\Config;
@@ -17,12 +18,40 @@ class ProxifyPlugin extends AbstractPlugin {
 		if(starts_with($url, 'data:')){
 			return $matches[0];
 		}
-		return str_replace($matches[1], proxify_url($matches[1], $this->base_url), $matches[0]);
+//		if(strpos($url,'.png')!==false || strpos($url,'.jpg')!==false || strpos($url,'.webp')!==false){
+//			return str_replace($matches[1], whole_url($matches[1], $this->base_url), $matches[0]);
+//		}
+		return str_replace($matches[1], whole_url($matches[1], $this->base_url), $matches[0]);
 	}
 	
 	// this.params.logoImg&&(e="background-image: url("+this.params.logoImg+")")
 	private function css_import($matches){
 		return str_replace($matches[2], proxify_url($matches[2], $this->base_url), $matches[0]);
+	}
+
+	//  var u = '/xjs/_/js/k\x3dxjs.s.en_NCQ';
+	private function script_url($matches){
+		if(strpos($matches[1],'.png')!==false || strpos($matches[1],'.jpg')!==false || strpos($matches[1],'.webp')!==false){
+			return str_replace($matches[1], whole_url($matches[1], $this->base_url), $matches[0]);
+		}
+
+		return str_replace($matches[1], proxify_url($matches[1], $this->base_url), $matches[0]);
+	}
+
+
+	// replace  <link href=
+	private function link_href_attr($matches){
+
+		// could be empty?
+		$url = trim($matches[2]);
+
+		$schemes = array('data:', 'magnet:', 'about:', 'javascript:', 'mailto:', 'tel:', 'ios-app:', 'android-app:', 'blob:');
+		if(starts_with($url, $schemes)){
+			return $matches[0];
+		}
+//		console_log('html_attr_debug-' . str_replace($url, proxify_url($url, $this->base_url), $matches[0]));
+		return str_replace($url, whole_url($url, $this->base_url), $matches[0]);
+//		return 'link_href_attr debug';
 	}
 
 	// replace  href=
@@ -35,21 +64,25 @@ class ProxifyPlugin extends AbstractPlugin {
 		if(starts_with($url, $schemes)){
 			return $matches[0];
 		}
-		console_log('html_attr_debug-' . str_replace($url, proxify_url($url, $this->base_url), $matches[0]));
+//		console_log('html_attr_debug-' . str_replace($url, proxify_url($url, $this->base_url), $matches[0]));
 		return str_replace($url, proxify_url($url, $this->base_url), $matches[0]);
+//		return str_replace($url,proxify_url($url, $this->base_url), $matches[0]);
+//		return whole_url($url, $this->base_url);
 	}
 
 	private function script_attr($matches){
 
 		// could be empty?
 		$url = trim($matches[3]);
-		console_log('script_attr: ' . $url);
+//		console_log('script_attr: ' . $url);
 		$schemes = array('data:', 'magnet:', 'about:', 'javascript:', 'mailto:', 'tel:', 'ios-app:', 'android-app:', 'blob:');
 		if(starts_with($url, $schemes)){
 			return $matches[0];
 		}
-		console_log('html_attr_debug-' . str_replace($url, proxify_url($url, $this->base_url), $matches[0]));
-		return str_replace($url, proxify_url($url, $this->base_url), $matches[0]);
+//		console_log('html_attr_debug-' . str_replace($url, proxify_url($url, $this->base_url), $matches[0]));
+//		return str_replace($url, proxify_url($url, $this->base_url), $matches[0]);
+		return str_replace($url, whole_url($url, $this->base_url), $matches[0]);
+
 	}
 
 	//replace  src
@@ -78,7 +111,9 @@ class ProxifyPlugin extends AbstractPlugin {
 			$matches[2] = $this->base_url;
 		}
 		$new_action = proxify_url($matches[2], $this->base_url);
-		console_log('form_action-debug ' . no_encode_proxify_url($matches[2], $this->base_url));
+//		console_log('form_action-debug ' . no_encode_proxify_url($matches[2], $this->base_url));
+//		console_logs('form_action-debug-new_action ' . $new_action);
+
 
 		// what is form method?
 		$form_post = preg_match('@method=(["\'])post\1@i', $matches[0]) == 1;
@@ -94,6 +129,7 @@ class ProxifyPlugin extends AbstractPlugin {
 			
 			// got the idea from Glype - insert this input field to notify proxy later that this form must be converted to GET during http
 			$result .= '<input type="hidden" name="convertGET" value="1">';
+//			console_log('form_action-debug-result ' );
 		}
 
 //		console_log('$result '. $result);
@@ -135,13 +171,16 @@ class ProxifyPlugin extends AbstractPlugin {
 		if(Config::get('replace_title')){
 			$str = preg_replace('/<title[^>]*>(.*?)<\/title>/is', '<title>'.Config::get('replace_title').'</title>', $str);
 		}
-		
-		
+
+
 		// base - update base_url contained in href - remove <base> tag entirely
 		//$str = preg_replace_callback('/<base[^>]*href=
-		
+
 		// link - replace href with proxified
 		// link rel="shortcut icon" - replace or remove
+//		'@<link[^>]*href\s*=\s*(["\'])(.*?)\1@is'
+		$str = preg_replace_callback('@<link[^>]*href\s*=\s*(["\'])(.*?)\1@is', array($this, 'link_href_attr'), $str);
+
 		
 		// meta - only interested in http-equiv - replace url refresh
 		// <meta http-equiv="refresh" content="5; url=http://example.com/">
@@ -164,6 +203,18 @@ class ProxifyPlugin extends AbstractPlugin {
 		
 		return $str;
 	}
+
+	private function proxfy_script($str){
+
+		// The HTML5 standard does not require quotes around attribute values.
+
+		// if {1} is not there then youtube breaks for some reason
+		//  u = '/xjs/_/js/k\x3dxjs.s.en_NCQ';
+		// www.youtube.com TO proxy-app.com/index.php?q=encrypt_url(www.youtube.com)
+		$str = preg_replace_callback('@[a-z\_]{1}.*=\s*[\'](\/[^\']*)[\']@im', array($this, 'script_url'), $str);
+
+		return $str;
+	}
 	
 	public function onCompleted(ProxyEvent $event){
 		
@@ -176,12 +227,24 @@ class ProxifyPlugin extends AbstractPlugin {
 		
 		$str = $response->getContent();
 
-		// DO NOT do any proxification on .js files and text/plain content type
-		// add some type of files that do not do proxification
-		$no_proxify = array('text/javascript', 'application/javascript', 'application/x-javascript', 'text/plain', 'video/mp4', 'image/png');
-		if(in_array($content_type, $no_proxify)){
-			return;
+		// do some proxification on .js files and text/plain content type
+		$script_proxify = array('text/javascript', 'application/javascript', 'application/x-javascript');
+		foreach ($script_proxify as $value) {
+			if (strpos($content_type, $value)!==False){
+//				$str = JavaScript::parse_scripts($str);
+				$response->setContent($str);
+				return;
+			}
 		}
+
+		// DO NOT do any proxification on img/video files and text/plain content type
+		$no_proxify = array( 'text/plain', 'video/mp4', 'image/png');
+		foreach ($no_proxify as $value) {
+			if (strpos($content_type, $value)){
+				return;
+			}
+		}
+
 		
 		// remove JS from urls
 		$js_remove = (array)Config::get('js_remove');
@@ -191,7 +254,6 @@ class ProxifyPlugin extends AbstractPlugin {
 			}
 		}
 
-
 		// add html.no-js
 		
 		// let's remove all frames?? does not protect against the frames created dynamically via javascript
@@ -199,9 +261,10 @@ class ProxifyPlugin extends AbstractPlugin {
 		
 		$str = $this->proxify_head($str);
 		$str = $this->proxify_css($str);
-		
+//		$str = $this->proxfy_script($str);
+
 		//href=
-		$str = preg_replace_callback('@(?:href)\s*=\s*(["|\'])(.*?)\1@is', array($this, 'html_attr'), $str);
+		$str = preg_replace_callback('@<a[^>]*(?:href)\s*=\s*(["|\'])(.*?)\1@is', array($this, 'html_attr'), $str);
 
 		// src=
 		$str = preg_replace_callback('#(?><img|video)(?>\s+[^>\s]+)*?\s*(?>(src)\s*=(?!\\\\)\s*)(?>([\\\'"])?)((?(2)(?(?<=")[^"]{1,1000}|[^\\\']{1,1000})|[^ >]{1,1000}))(?(2)\\2|)#i', array($this, 'src_attr'), $str);
@@ -231,10 +294,8 @@ class ProxifyPlugin extends AbstractPlugin {
 			
 			return 'srcset="'.$src.'"';
 		}, $str);
-		
 		// form
 		$str = preg_replace_callback('@<form[^>]*action=(["\'])(.*?)\1[^>]*>@i', array($this, 'form_action'), $str);
-		
 		$response->setContent($str);
 	}
 

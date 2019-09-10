@@ -116,7 +116,7 @@ class Proxy {
 	
 		// change request URL
 		$request->setUrl($url);
-		
+
 		// prepare request and response objects
 		$this->request = $request;
 		$this->response = new Response();
@@ -159,7 +159,8 @@ class Proxy {
 		
 			// any plugin might have changed our URL by this point
 			$options[CURLOPT_URL] = $this->request->getUri();
-			
+//			console_log('proxy.php $this->request->getUri()'. $this->request->getUri());
+
 			// fill in the rest of cURL options
 			$options[CURLOPT_HTTPHEADER] = explode("\r\n", $this->request->getRawHeaders());
 			$options[CURLOPT_CUSTOMREQUEST] = $this->request->getMethod();

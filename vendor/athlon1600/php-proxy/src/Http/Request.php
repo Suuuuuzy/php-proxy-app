@@ -131,7 +131,7 @@ class Request {
 		
 		// remove it and add the query params to get collection
 		if($query){
-			//$url = str_replace('?'.$query, '', $url);
+//			$url = str_replace('?'.$query, '', $url);
 			$url = preg_replace('/\?.*/', '', $url);
 			
 			$result = self::parseQuery($query);
@@ -140,7 +140,10 @@ class Request {
 		
 		// url without query params - those will be appended later
 		$this->url = $url;
-		$this->headers->set('host', parse_url($url, PHP_URL_HOST));
+//		console_log('$query '. $query);
+//        console_log('setUrl ' . $url);
+
+        $this->headers->set('host', parse_url($url, PHP_URL_HOST));
 	}
 	
 	public function getRawHeaders(){
