@@ -4,7 +4,6 @@ namespace Proxy\Plugin;
 
 use Proxy\Plugin\AbstractPlugin;
 use Proxy\Event\ProxyEvent;
-
 use Proxy\Html;
 
 class YoutubePlugin extends AbstractPlugin {

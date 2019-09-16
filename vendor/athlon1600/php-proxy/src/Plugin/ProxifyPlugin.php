@@ -257,7 +257,7 @@ class ProxifyPlugin extends AbstractPlugin {
 		// add html.no-js
 		
 		// let's remove all frames?? does not protect against the frames created dynamically via javascript
-		$str = preg_replace('@<iframe[^>]*>[^<]*<\\/iframe>@is', '', $str);
+//		$str = preg_replace('@<iframe[^>]*>[^<]*<\\/iframe>@is', '', $str);
 		
 		$str = $this->proxify_head($str);
 		$str = $this->proxify_css($str);

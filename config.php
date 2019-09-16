@@ -35,7 +35,11 @@ $config['plugins'] = array(
 	'XVideos',
 	'Pornhub',
 	'Twitter',
-    'IMDB'
+    'IMDB',
+    'Taobao',
+    'Weibo',
+    'Tmall',
+    'CSDN'
 );
 
 // additional curl options to go with each request
@@ -45,7 +49,7 @@ $config['curl'] = array(
 );
 
 
-//$config['js_remove'] = array('reddit.com');
+$config['js_remove'] = array('reddit.com');
 
 //$config['replace_title'] = 'Google Search';
 
