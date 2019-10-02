@@ -19,7 +19,6 @@ class CSDNPlugin extends AbstractPlugin {
         $output = $response->getContent();
 //        $output = preg_replace('@(</title>)(\s*)@', \1 . '<meta name="referrer" content="no-referrer" />', $output);
         $output = preg_replace('@<\/title>\s*@', '</title><meta name="referrer" content="no-referrer" />', $output);
-
         $response->setContent($output);
     }
 }
