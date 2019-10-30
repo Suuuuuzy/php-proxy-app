@@ -196,7 +196,7 @@ class ProxifyPlugin extends AbstractPlugin {
 		
 		// meta - only interested in http-equiv - replace url refresh
 		// <meta http-equiv="refresh" content="5; url=http://example.com/">
-		$str = preg_replace_callback('/content=(["\'])\d+\s*;\s*url=(.*?)\1/is', array($this, 'meta_refresh'), $str);
+//		$str = preg_replace_callback('/content=(["\'])\d+\s*;\s*url=(.*?)\1/is', array($this, 'meta_refresh'), $str);
 		
 		return $str;
 	}
@@ -272,16 +272,16 @@ class ProxifyPlugin extends AbstractPlugin {
 //		$str = preg_replace('@<iframe[^>]*>[^<]*<\\/iframe>@is', '', $str);
 		
 		$str = $this->proxify_head($str, $this->base_url);
-		$str = $this->proxify_css($str);
+//		$str = $this->proxify_css($str);
 //		$str = $this->proxfy_script($str);
 
 		//href=
-		$str = preg_replace_callback('@<a[^>]*(?:href)\s*=\s*(["|\'])(.*?)\1@is', array($this, 'html_attr'), $str);
+//		$str = preg_replace_callback('@<a[^>]*(?:href)\s*=\s*(["|\'])(.*?)\1@is', array($this, 'html_attr'), $str);
 
 		// src=
-		$str = preg_replace_callback('#(?><img|video)(?>\s+[^>\s]+)*?\s*(?>(src)\s*=(?!\\\\)\s*)(?>([\\\'"])?)((?(2)(?(?<=")[^"]{1,1000}|[^\\\']{1,1000})|[^ >]{1,1000}))(?(2)\\2|)#i', array($this, 'src_attr'), $str);
+/*		$str = preg_replace_callback('#(?><img|video)(?>\s+[^>\s]+)*?\s*(?>(src)\s*=(?!\\\\)\s*)(?>([\\\'"])?)((?(2)(?(?<=")[^"]{1,1000}|[^\\\']{1,1000})|[^ >]{1,1000}))(?(2)\\2|)#i', array($this, 'src_attr'), $str);*/
 
-		$str = preg_replace_callback('#(?><a|script|link)(?>\s+[^>\s]+)*?\s*(?>(src)\s*=(?!\\\\)\s*)(?>([\\\'"])?)((?(2)(?(?<=")[^"]{1,1000}|[^\\\']{1,1000})|[^ >]{1,1000}))(?(2)\\2|)#i', array($this, 'script_attr'), $str);
+/*		$str = preg_replace_callback('#(?><a|script|link)(?>\s+[^>\s]+)*?\s*(?>(src)\s*=(?!\\\\)\s*)(?>([\\\'"])?)((?(2)(?(?<=")[^"]{1,1000}|[^\\\']{1,1000})|[^ >]{1,1000}))(?(2)\\2|)#i', array($this, 'script_attr'), $str);*/
 
 //		$str = preg_replace_callback('@(?:src)\s*=\s*(["|\'])(.*?)\1@is', array($this, 'src_attr'), $str);
 //		$str = preg_replace_callback('@(?:src)\s*=\s*(["|\'])(.*?)\1@is', array($this, 'html_attr'), $str);
@@ -307,7 +307,7 @@ class ProxifyPlugin extends AbstractPlugin {
 			return 'srcset="'.$src.'"';
 		}, $str);
 		// form
-		$str = preg_replace_callback('@<form[^>]*action=(["\'])(.*?)\1[^>]*>@i', array($this, 'form_action'), $str);
+//		$str = preg_replace_callback('@<form[^>]*action=(["\'])(.*?)\1[^>]*>@i', array($this, 'form_action'), $str);
 		$response->setContent($str);
 	}
 
