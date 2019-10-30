@@ -38,6 +38,13 @@ class ProxifyPlugin extends AbstractPlugin {
 		return str_replace($matches[1], proxify_url($matches[1], $this->base_url), $matches[0]);
 	}
 
+//	private function base($matches){
+//
+//		// could be empty?
+//		$url = trim($matches[2]);
+//		return str_replace($url, whole_url($url, $this->base_url), $matches[0]);
+//
+//	}
 
 	// replace  <link href=
 	private function link_href_attr($matches){
@@ -165,16 +172,21 @@ class ProxifyPlugin extends AbstractPlugin {
 	}
 	
 	// <title>, <base>, <link>, <style>, <meta>, <script>, <noscript>
-	private function proxify_head($str){
+	private function proxify_head($str, $base_url){
 		
 		// let's replace page titles with something custom
 		if(Config::get('replace_title')){
 			$str = preg_replace('/<title[^>]*>(.*?)<\/title>/is', '<title>'.Config::get('replace_title').'</title>', $str);
 		}
 
+		// add referrer policy
+		$str = preg_replace('@<\/title>\s*@', '</title><meta name="referrer" content="no-referrer" />', $str);
 
-		// base - update base_url contained in href - remove <base> tag entirely
-		//$str = preg_replace_callback('/<base[^>]*href=
+
+		// delete old base tag - update base_url contained in href - remove <base> tag entirely
+		$str = preg_replace('/<base[^>]*>/is', '', $str);
+		// create new base tags
+		$str = preg_replace('@<head>@is', '<head><base href="'.$base_url.'" target="_blank">', $str);
 
 		// link - replace href with proxified
 		// link rel="shortcut icon" - replace or remove
@@ -259,7 +271,7 @@ class ProxifyPlugin extends AbstractPlugin {
 		// let's remove all frames?? does not protect against the frames created dynamically via javascript
 //		$str = preg_replace('@<iframe[^>]*>[^<]*<\\/iframe>@is', '', $str);
 		
-		$str = $this->proxify_head($str);
+		$str = $this->proxify_head($str, $this->base_url);
 		$str = $this->proxify_css($str);
 //		$str = $this->proxfy_script($str);
 

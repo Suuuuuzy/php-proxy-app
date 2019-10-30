@@ -47,7 +47,7 @@ var g_scenes = {};  // each of the models
 var g_sceneGroups = {};  // the placement of the models
 var g_fog = true;
 //yujianjia
-var g_numFish = [1, 100, 5000, 1000, 5000, 10000, 15000, 20000, 25000, 30000];
+var g_numFish = [1, 100, 20000, 1000, 5000, 10000, 15000, 20000, 25000, 30000];
 
 var g_stereoDemoActive = false;
 var g_shadersNeedUpdate = false; // Set to true whenever the state has changed so that shaders may need to be changed.
@@ -394,12 +394,12 @@ Object.defineProperty(a, 'status', {
 var Timing = 0;
 var FPSRecord  = [];
 function beginTiming(){
-  console.log('start');
+  console.log('=============start==============');
 	Timing = 1;
 	FPSRecord = [];
 }
 function stopTiming(){
-  console.log('stop');
+  console.log('=============stop=============s');
 	Timing = 0;
 	var ajax = new XMLHttpRequest();
   
@@ -1838,30 +1838,22 @@ function initialize() {
 
     frameCount++;
     g_fpsTimer.update(elapsedTime);
-    fpsElem.innerHTML = g_fpsTimer.averageFPS;
+    // fpsElem.innerHTML = g_fpsTimer.averageFPS;
     
     var x2_time = performance.now();
     //yujianjia
-//    if (frameCount < 1000)
     if (Timing){
-//      console.log(x2_time - x_time);
-        console.log(Date.now());
-        console.log(x2_time-x_time);
-	      FPSRecord.push(Date.now());
-	      FPSRecord.push(x2_time-x_time);
-     }
-
-        x_time = x2_time;
-
-    var iframeelement1 = document.getElementById('testiframe1');
-    if (frameCount == 100){
-//      iframeelement1.src = "http://3.221.81.120/php-proxy-app/index.php?q=https%3A%2F%2Fwww.youtube.com%2F";
-//     iframeelement1.src = 'http://baidu.com/';
+      // console.log(Date.now());
+      FPSRecord.push(Date.now());
+      // FPSRecord.push(g_fpsTimer.averageFPS);
+	     FPSRecord.push(x2_time-x_time);
     }
+    fpsElem.innerHTML = Math.round(x2_time-x_time);
+    // console.log(g_fpsTimer.averageFPS);
+    // console.log(Date.now());
+    // console.log(x2_time-x_time);
 
-    
-
-    
+    x_time = x2_time;
 
     // If we are running > 40hz then turn on a few more options.
     if (setPretty && g_fpsTimer.averageFPS > 40) {

@@ -8,6 +8,7 @@ use Proxy\Event\ProxyEvent;
 use Proxy\Html;
 
 
+
 class WeiboPlugin extends AbstractPlugin {
 
     protected $url_pattern = 'weibo.com';
